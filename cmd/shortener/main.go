@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -53,6 +55,11 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Поступил GET-запрос")
 		param := strings.TrimPrefix(r.URL.Path, "/")
 
+		if param == "" {
+			http.Error(w, "Введите идентификатор URL!", http.StatusBadRequest)
+			return
+		}
+
 		if id, err := strconv.Atoi(param); err != nil || id < 0 {
 			http.Error(w, "Некорректный параметр запроса!", http.StatusBadRequest)
 			return
@@ -69,7 +76,23 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.Method == http.MethodPost {
 		log.Printf("Поступил POST-запрос")
-
+		///////////////////////////////////////////
+		// TODO: implement POST method
+		// читаем Body
+		b, err := io.ReadAll(r.Body)
+		// обрабатываем ошибку
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		// продолжаем обработку
+		// ...
+		resp, err := json.Unmarshal(b)
+		if err != nil {
+			log.Fatal("Error!")
+		}
+		log.Print(resp)
+		///////////////////////////////////////////
 	} else {
 		http.Error(w, "Only GET & POST methods are allowed!", http.StatusBadRequest)
 		log.Printf("Поступил некорректный метод запроса: %s\n", r.Method)
