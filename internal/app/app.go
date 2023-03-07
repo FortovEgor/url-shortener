@@ -54,6 +54,7 @@ func generateIdOfURL(url string) uint32 {
 // PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
 func PerformSeedingOfDB() {
 	UrlDb[generateIdOfURL("short_url")] = "google.com"
+	log.Println(generateIdOfURL("short_url"))
 }
 
 func shortenUrl(fullURL string) string {
@@ -78,8 +79,10 @@ func shortenUrl(fullURL string) string {
 // MainHandler - обработчик GET запросов
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		log.Printf("Поступил GET-запрос")
+		log.Println("Поступил GET-запрос")
+		log.Println("path:", r.URL.Path)
 		param := strings.TrimPrefix(r.URL.Path, "/")
+		log.Println("param: ", param)
 
 		if param == "" {
 			http.Error(w, "Введите идентификатор URL!", http.StatusBadRequest)
@@ -87,11 +90,13 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if id, err := strconv.Atoi(param); err != nil || id < 0 {
+			log.Println(err, id)
 			http.Error(w, "Некорректный параметр запроса!", http.StatusBadRequest)
 			return
 		}
 		id, _ := strconv.Atoi(param)
 		fullUrl, exists := UrlDb[uint32(id)]
+		//w.Write([]byte("Hello world" + fullUrl))
 		if exists { // такой идентификатор URL есть в БД
 			w.Header().Set("Location", fullUrl)
 			w.WriteHeader(307)
