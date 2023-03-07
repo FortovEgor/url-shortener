@@ -21,6 +21,7 @@ import (
 const host = "localhost:8080"
 
 var UrlDb = make(map[uint32]string) // словарь типа "идентификатор_сокращенного_URL : полный_URL"
+// сокращенный URL - это host + unique_id(uint32)
 
 // Jenkins hash function
 // source: https://dev.to/ishankhare07/you-think-you-understand-key-value-pairs-m7l
@@ -47,6 +48,16 @@ func generateIdOfURL(url string) uint32 {
 // Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
 func performSeedingOfDB() {
 	UrlDb[generateIdOfURL("short_url")] = "google.com"
+}
+
+func shortenUrl(fullURL string) string {
+	var shortURL string = host
+	var uniqueNumber uint32 = 0
+	for _, ok := UrlDb[uniqueNumber]; !ok; {
+		uniqueNumber++
+	}
+	UrlDb[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
+	return shortURL + string(uniqueNumber)
 }
 
 // MainHandler - обработчик GET запросов
@@ -85,13 +96,19 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		// продолжаем обработку
-		// ...
-		resp, err := json.Unmarshal(b)
-		if err != nil {
-			log.Fatal("Error!")
+		//log.Print(string(b))
+		var data map[string]string // в этой мапе лежат все переменные из POST запроса
+		json.Unmarshal([]byte(b), &data)
+		//fmt.Println(data)
+		var fullURL string // full URL, полученный в запросе
+		for _, value := range data {
+			fullURL = value
 		}
-		log.Print(resp)
+		shortURL := shortenUrl(fullURL)
+		// отправляем ответ с кодом 201 и сокращённым URL в виде
+		// текстовой строки в теле.
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(shortURL))
 		///////////////////////////////////////////
 	} else {
 		http.Error(w, "Only GET & POST methods are allowed!", http.StatusBadRequest)
