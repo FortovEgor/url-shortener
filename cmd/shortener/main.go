@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -53,11 +54,12 @@ func performSeedingOfDB() {
 func shortenUrl(fullURL string) string {
 	var shortURL string = host
 	var uniqueNumber uint32 = 0
-	for _, ok := UrlDb[uniqueNumber]; !ok; {
+	for _, ok := UrlDb[uniqueNumber]; ok; {
 		uniqueNumber++
 	}
 	UrlDb[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
-	return shortURL + string(uniqueNumber)
+	log.Println("uniqueNumber:", uniqueNumber)
+	return shortURL + "/" + fmt.Sprint(uniqueNumber)
 }
 
 // MainHandler - обработчик GET запросов
