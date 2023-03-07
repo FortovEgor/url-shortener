@@ -51,7 +51,7 @@ func generateIdOfURL(url string) uint32 {
 	return hash(url)
 }
 
-// Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
+// PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
 func PerformSeedingOfDB() {
 	UrlDb[generateIdOfURL("short_url")] = "google.com"
 }
@@ -95,7 +95,11 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		if exists { // такой идентификатор URL есть в БД
 			w.Header().Set("Location", fullUrl)
 			w.WriteHeader(307)
-			w.Write([]byte(fullUrl))
+			_, err := w.Write([]byte(fullUrl))
+			if err != nil {
+				http.Error(w, "Ошибка во время возвращения ответа!", http.StatusBadRequest)
+				return
+			}
 		} else {
 			http.Error(w, "Такого идентификатора URL нет!", http.StatusBadRequest)
 			return
@@ -103,7 +107,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == http.MethodPost {
 		log.Printf("Поступил POST-запрос")
 		///////////////////////////////////////////
-		// TODO: implement POST method
 		// читаем Body
 		b, err := io.ReadAll(r.Body)
 		// обрабатываем ошибку
@@ -113,7 +116,11 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		//log.Print(string(b))
 		var data map[string]string // в этой мапе лежат все переменные из POST запроса
-		json.Unmarshal([]byte(b), &data)
+		err = json.Unmarshal(b, &data)
+		if err != nil {
+			http.Error(w, "Ошибка во время распаковки JSON!", http.StatusBadRequest)
+			return
+		}
 		//fmt.Println(data)
 		var fullURL string // full URL, полученный в запросе
 		for _, value := range data {
@@ -123,7 +130,11 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		shortURL := shortenUrl(fullURL)
 		log.Println("End shortening url")
 		w.WriteHeader(http.StatusCreated) // код ответа - 201
-		w.Write([]byte(shortURL))         // отправляем текстовую строку в теле ответа
+		_, err = w.Write([]byte(shortURL))
+		if err != nil {
+			http.Error(w, "Ошибка во время записи ответа!", http.StatusBadRequest)
+			return
+		} // отправляем текстовую строку в теле ответа
 		log.Println(shortURL)
 		///////////////////////////////////////////
 	} else {
