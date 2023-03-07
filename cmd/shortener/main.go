@@ -19,6 +19,9 @@ import (
 - Нужно учесть некорректные запросы и возвращать для них ответ с кодом 400. +
 */
 
+// Примечание: при обработке POST запроса просиходит проверка на существование
+// данного ресурса в БД сайта.
+
 const host = "localhost:8080"
 
 var UrlDb = make(map[uint32]string) // словарь типа "идентификатор_сокращенного_URL : полный_URL"
@@ -54,15 +57,19 @@ func performSeedingOfDB() {
 func shortenUrl(fullURL string) string {
 	var shortURL = host
 	var uniqueNumber uint32 = 0
+	var val string
 	for _, ok := UrlDb[uniqueNumber]; ok; uniqueNumber++ {
-		_, ok = UrlDb[uniqueNumber]
+		val, ok = UrlDb[uniqueNumber]
+		if ok && val == fullURL {
+			return shortURL + "/" + fmt.Sprint(uniqueNumber)
+		}
 		//fmt.Println(uniqueNumber)
 	}
 	if uniqueNumber != 0 {
 		uniqueNumber--
 	}
 	UrlDb[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
-	log.Println("uniqueNumber:", uniqueNumber)
+	//log.Println("uniqueNumber:", uniqueNumber)
 	return shortURL + "/" + fmt.Sprint(uniqueNumber)
 }
 
