@@ -52,10 +52,14 @@ func performSeedingOfDB() {
 }
 
 func shortenUrl(fullURL string) string {
-	var shortURL string = host
+	var shortURL = host
 	var uniqueNumber uint32 = 0
-	for _, ok := UrlDb[uniqueNumber]; ok; {
-		uniqueNumber++
+	for _, ok := UrlDb[uniqueNumber]; ok; uniqueNumber++ {
+		_, ok = UrlDb[uniqueNumber]
+		//fmt.Println(uniqueNumber)
+	}
+	if uniqueNumber != 0 {
+		uniqueNumber--
 	}
 	UrlDb[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
 	log.Println("uniqueNumber:", uniqueNumber)
@@ -106,7 +110,9 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		for _, value := range data {
 			fullURL = value
 		}
+		log.Println("Start shortening url")
 		shortURL := shortenUrl(fullURL)
+		log.Println("End shortening url")
 		w.WriteHeader(http.StatusCreated) // код ответа - 201
 		w.Write([]byte(shortURL))         // отправляем текстовую строку в теле ответа
 		log.Println(shortURL)
