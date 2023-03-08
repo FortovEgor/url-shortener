@@ -79,7 +79,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(Host + id))
 		///////////////////////////////////////////
 	} else {
-		http.Error(w, "Only GET & POST methods are allowed!", http.StatusMethodNotAllowed)
+		http.Error(w, "Only GET & POST methods are allowed!", http.StatusBadReques)
 		log.Printf("Поступил некорректный метод запроса: %s\n", r.Method)
 		return
 	}
