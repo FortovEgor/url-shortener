@@ -119,9 +119,8 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		log.Println(string(b)) // пришедшее значение
-		var fullURL string     // full URL, полученный в запросе
-		fullURL = string(b)
+		log.Println(string(b))  // пришедшее значение
+		var fullURL = string(b) // full URL, полученный в запросе
 		log.Println("Start shortening url")
 		shortURL := shortenURL(fullURL)
 		log.Println("End shortening url")
