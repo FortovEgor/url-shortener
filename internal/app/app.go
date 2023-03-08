@@ -5,8 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
+	"net/url"
 )
 
 /*
@@ -23,10 +22,12 @@ import (
 
 //////////////////////////////////////////////////////////////////////
 
-const Host = "localhost:8080"
+const Host = "http://localhost:8080/"
+const Port = ":8080"
 
-var URLDB = make(map[uint32]string) // словарь типа "идентификатор_сокращенного_URL : полный_URL"
+// var URLDB = make(map[uint32]string) // словарь типа "идентификатор_сокращенного_URL : полный_URL"
 // сокращенный URL - это host + unique_id(uint32)
+var URLDB = make(map[string]string) // словарь типа "short_url:full_url"
 
 // Jenkins hash function
 // source: https://dev.to/ishankhare07/you-think-you-understand-key-value-pairs-m7l
@@ -46,41 +47,45 @@ func hash(key string) (hash uint32) {
 }
 
 // Ф-ия возвращает уникальный идентификатор ресурса
-func generateIDOfURL(url string) uint32 {
-	return hash(url)
-}
+//func generateIDOfURL(url string) uint32 {
+//	return hash(url)
+//}
 
 // PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
 func PerformSeedingOfDB() {
-	URLDB[generateIDOfURL("short_url")] = "google.com"
+	//URLDB[generateIDOfURL("short_url")] = "google.com"
+	URLDB["short_url"] = "google.com"
 	//log.Println("short-url:", generateIDOfURL("short_url")) // 1806399902
 }
 
 func shortenURL(fullURL string) string {
-	var shortURL = Host
-	var uniqueNumber uint32 = 0
-	var val string
-	for _, ok := URLDB[uniqueNumber]; ok; uniqueNumber++ {
-		val, ok = URLDB[uniqueNumber]
-		if ok && val == fullURL {
-			return shortURL + "/" + fmt.Sprint(uniqueNumber)
-		}
-		//fmt.Println(uniqueNumber)
-	}
-	if uniqueNumber != 0 {
-		uniqueNumber--
-	}
-	URLDB[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
-	//log.Println("uniqueNumber:", uniqueNumber)
-	return shortURL + "/" + fmt.Sprint(uniqueNumber)
+	return "temp.com"
+	//var shortURL = Host
+	//var uniqueNumber uint32 = 0
+	//var val string
+	//for _, ok := URLDB[uniqueNumber]; ok; uniqueNumber++ {
+	//	val, ok = URLDB[uniqueNumber]
+	//	if ok && val == fullURL {
+	//		return shortURL + "/" + fmt.Sprint(uniqueNumber)
+	//	}
+	//	//fmt.Println(uniqueNumber)
+	//}
+	//if uniqueNumber != 0 {
+	//	uniqueNumber--
+	//}
+	//URLDB[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
+	////log.Println("uniqueNumber:", uniqueNumber)
+	//return shortURL + "/" + fmt.Sprint(uniqueNumber)
 }
 
 // MainHandler - обработчик GET запросов
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		log.Println("Поступил GET-запрос")
+
 		log.Println("path:", r.URL.Path)
-		param := strings.TrimPrefix(r.URL.Path, "/")
+		//param := strings.TrimPrefix(r.URL.Path, "/")
+		param := r.URL.Path[1:]
 		log.Println("param: ", param)
 
 		if param == "" {
@@ -88,52 +93,40 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if id, err := strconv.Atoi(param); err != nil || id < 0 {
-			log.Println("err:", err, "id:", id)
-			http.Error(w, "Некорректный параметр запроса!", http.StatusBadRequest)
+		target, ok := URLDB[param]
+		if !ok {
+			http.Error(w, "Такого short_url нет в БД!", http.StatusBadRequest)
 			return
 		}
-		id, _ := strconv.Atoi(param)
-		fullURL, exists := URLDB[uint32(id)]
-		//w.Write([]byte("Hello world" + fullURL))
-		if exists { // такой идентификатор URL есть в БД
-			w.Header().Set("Location", fullURL) // ВОТ В ЭТОЙ СТРОЧКЕ ПРОБЛЕМА
-			log.Println("HERE!")
-			w.WriteHeader(307)
-			_, err := w.Write([]byte(fullURL))
-			if err != nil {
-				http.Error(w, "Ошибка во время возвращения ответа!", http.StatusBadRequest)
-				return
-			}
-		} else {
-			http.Error(w, "Такого идентификатора URL нет!", http.StatusBadRequest)
-			return
-		}
+
+		w.Header().Set("Location", target)
+		w.WriteHeader(http.StatusTemporaryRedirect)
+
 	} else if r.Method == http.MethodPost {
 		log.Printf("Поступил POST-запрос")
 		///////////////////////////////////////////
-		// читаем Body
 		b, err := io.ReadAll(r.Body) // тип параметра в теле запроса - plain
-		// обрабатываем ошибку
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		log.Println(string(b))  // пришедшее значение
-		var fullURL = string(b) // full URL, полученный в запросе
-		log.Println("Start shortening url")
-		shortURL := shortenURL(fullURL)
-		log.Println("End shortening url")
-		w.WriteHeader(http.StatusCreated) // код ответа - 201
-		_, err = w.Write([]byte(shortURL))
-		if err != nil {
-			http.Error(w, "Ошибка во время записи ответа!", http.StatusBadRequest)
+		log.Println(string(b)) // пришедшее значение
+		var param = string(b)  // full URL, полученный в запросе
+
+		if _, err := url.Parse(param); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = w.Write([]byte("То, что Вы ввели, непохоже на url!"))
 			return
-		} // отправляем текстовую строку в теле ответа
-		log.Println(shortURL)
+		}
+
+		id := fmt.Sprintf("%x", len(URLDB))
+		URLDB[id] = param
+
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(Host + id))
 		///////////////////////////////////////////
 	} else {
-		http.Error(w, "Only GET & POST methods are allowed!", http.StatusBadRequest)
+		http.Error(w, "Only GET & POST methods are allowed!", http.StatusMethodNotAllowed)
 		log.Printf("Поступил некорректный метод запроса: %s\n", r.Method)
 		return
 	}

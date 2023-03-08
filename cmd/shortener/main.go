@@ -12,7 +12,7 @@ func main() {
 	http.HandleFunc("/", app.MainHandler)
 
 	server := &http.Server{
-		Addr: app.Host,
+		Addr: app.Port,
 	}
 	log.Fatal(server.ListenAndServe()) // сервер принудительно завершает свою работу
 }
