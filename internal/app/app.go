@@ -26,7 +26,7 @@ import (
 
 const Host = "localhost:8080"
 
-var UrlDb = make(map[uint32]string) // словарь типа "идентификатор_сокращенного_URL : полный_URL"
+var URLDB = make(map[uint32]string) // словарь типа "идентификатор_сокращенного_URL : полный_URL"
 // сокращенный URL - это host + unique_id(uint32)
 
 // Jenkins hash function
@@ -47,22 +47,22 @@ func hash(key string) (hash uint32) {
 }
 
 // Ф-ия возвращает уникальный идентификатор ресурса
-func generateIdOfURL(url string) uint32 {
+func generateIDOfURL(url string) uint32 {
 	return hash(url)
 }
 
 // PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
 func PerformSeedingOfDB() {
-	UrlDb[generateIdOfURL("short_url")] = "google.com"
-	log.Println(generateIdOfURL("short_url"))
+	URLDB[generateIDOfURL("short_url")] = "google.com"
+	//log.Println("short-url:", generateIDOfURL("short_url")) // 1806399902
 }
 
-func shortenUrl(fullURL string) string {
+func shortenURL(fullURL string) string {
 	var shortURL = Host
 	var uniqueNumber uint32 = 0
 	var val string
-	for _, ok := UrlDb[uniqueNumber]; ok; uniqueNumber++ {
-		val, ok = UrlDb[uniqueNumber]
+	for _, ok := URLDB[uniqueNumber]; ok; uniqueNumber++ {
+		val, ok = URLDB[uniqueNumber]
 		if ok && val == fullURL {
 			return shortURL + "/" + fmt.Sprint(uniqueNumber)
 		}
@@ -71,7 +71,7 @@ func shortenUrl(fullURL string) string {
 	if uniqueNumber != 0 {
 		uniqueNumber--
 	}
-	UrlDb[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
+	URLDB[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
 	//log.Println("uniqueNumber:", uniqueNumber)
 	return shortURL + "/" + fmt.Sprint(uniqueNumber)
 }
@@ -90,17 +90,18 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if id, err := strconv.Atoi(param); err != nil || id < 0 {
-			log.Println(err, id)
+			log.Println("err:", err, "id:", id)
 			http.Error(w, "Некорректный параметр запроса!", http.StatusBadRequest)
 			return
 		}
 		id, _ := strconv.Atoi(param)
-		fullUrl, exists := UrlDb[uint32(id)]
-		//w.Write([]byte("Hello world" + fullUrl))
+		fullURL, exists := URLDB[uint32(id)]
+		//w.Write([]byte("Hello world" + fullURL))
 		if exists { // такой идентификатор URL есть в БД
-			w.Header().Set("Location", fullUrl)
+			w.Header().Set("Location", fullURL) // ВОТ В ЭТОЙ СТРОЧКЕ ПРОБЛЕМА
+			log.Println("HERE!")
 			w.WriteHeader(307)
-			_, err := w.Write([]byte(fullUrl))
+			_, err := w.Write([]byte(fullURL))
 			if err != nil {
 				http.Error(w, "Ошибка во время возвращения ответа!", http.StatusBadRequest)
 				return
@@ -132,7 +133,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 			fullURL = value
 		}
 		log.Println("Start shortening url")
-		shortURL := shortenUrl(fullURL)
+		shortURL := shortenURL(fullURL)
 		log.Println("End shortening url")
 		w.WriteHeader(http.StatusCreated) // код ответа - 201
 		_, err = w.Write([]byte(shortURL))
