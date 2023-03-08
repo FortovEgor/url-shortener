@@ -25,57 +25,11 @@ import (
 const Host = "http://localhost:8080/"
 const Port = ":8080"
 
-// var URLDB = make(map[uint32]string) // словарь типа "идентификатор_сокращенного_URL : полный_URL"
-// сокращенный URL - это host + unique_id(uint32)
 var URLDB = make(map[string]string) // словарь типа "short_url:full_url"
-
-// Jenkins hash function
-// source: https://dev.to/ishankhare07/you-think-you-understand-key-value-pairs-m7l
-func hash(key string) (hash uint32) {
-	hash = 0
-	for _, ch := range key {
-		hash += uint32(ch)
-		hash += hash << 10
-		hash ^= hash >> 6
-	}
-
-	hash += hash << 3
-	hash ^= hash >> 11
-	hash += hash << 15
-
-	return
-}
-
-// Ф-ия возвращает уникальный идентификатор ресурса
-//func generateIDOfURL(url string) uint32 {
-//	return hash(url)
-//}
 
 // PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
 func PerformSeedingOfDB() {
-	//URLDB[generateIDOfURL("short_url")] = "google.com"
 	URLDB["short_url"] = "google.com"
-	//log.Println("short-url:", generateIDOfURL("short_url")) // 1806399902
-}
-
-func shortenURL(fullURL string) string {
-	return "temp.com"
-	//var shortURL = Host
-	//var uniqueNumber uint32 = 0
-	//var val string
-	//for _, ok := URLDB[uniqueNumber]; ok; uniqueNumber++ {
-	//	val, ok = URLDB[uniqueNumber]
-	//	if ok && val == fullURL {
-	//		return shortURL + "/" + fmt.Sprint(uniqueNumber)
-	//	}
-	//	//fmt.Println(uniqueNumber)
-	//}
-	//if uniqueNumber != 0 {
-	//	uniqueNumber--
-	//}
-	//URLDB[uniqueNumber] = fullURL // добавляем новую запись в нашу БД
-	////log.Println("uniqueNumber:", uniqueNumber)
-	//return shortURL + "/" + fmt.Sprint(uniqueNumber)
 }
 
 // MainHandler - обработчик GET запросов
@@ -84,7 +38,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Поступил GET-запрос")
 
 		log.Println("path:", r.URL.Path)
-		//param := strings.TrimPrefix(r.URL.Path, "/")
 		param := r.URL.Path[1:]
 		log.Println("param: ", param)
 
