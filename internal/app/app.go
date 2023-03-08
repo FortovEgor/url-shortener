@@ -1,7 +1,6 @@
 package app
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -114,24 +113,15 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Поступил POST-запрос")
 		///////////////////////////////////////////
 		// читаем Body
-		b, err := io.ReadAll(r.Body)
+		b, err := io.ReadAll(r.Body) // тип параметра в теле запроса - plain
 		// обрабатываем ошибку
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		//log.Print(string(b))
-		var data map[string]string // в этой мапе лежат все переменные из POST запроса
-		err = json.Unmarshal(b, &data)
-		if err != nil {
-			http.Error(w, "Ошибка во время распаковки JSON!", http.StatusBadRequest)
-			return
-		}
-		//fmt.Println(data)
-		var fullURL string // full URL, полученный в запросе
-		for _, value := range data {
-			fullURL = value
-		}
+		log.Println(string(b)) // пришедшее значение
+		var fullURL string     // full URL, полученный в запросе
+		fullURL = string(b)
 		log.Println("Start shortening url")
 		shortURL := shortenURL(fullURL)
 		log.Println("End shortening url")
