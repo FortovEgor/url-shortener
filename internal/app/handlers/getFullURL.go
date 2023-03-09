@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// Обработчик GET запросов - запросов на получение full_URL из short_URL
+// GetFullURL - Обработчик GET запросов - запросов на получение full_URL из short_URL
 func GetFullURL(w http.ResponseWriter, r *http.Request) {
 	log.Println("path:", r.URL.Path)
 	param := r.URL.Path[1:]

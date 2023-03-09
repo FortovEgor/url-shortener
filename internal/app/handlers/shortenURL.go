@@ -10,7 +10,7 @@ import (
 	"net/url"
 )
 
-// Обработчик POST запросов - запросов на сокращение URL и занесение в БД сайта
+// ShortenURL - Обработчик POST запросов - запросов на сокращение URL и занесение в БД сайта
 func ShortenURL(w http.ResponseWriter, r *http.Request) {
 	b, err := io.ReadAll(r.Body) // тип параметра в теле запроса - plain
 	if err != nil {
