@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/FortovEgor/url-shortener/internal/app/configConstants"
 	"github.com/FortovEgor/url-shortener/internal/app/handlers"
 	"github.com/FortovEgor/url-shortener/internal/app/storage"
 	"log"
@@ -41,7 +42,7 @@ func StartServer() {
 	http.HandleFunc("/", handlers.MainHandler)
 
 	server := &http.Server{
-		Addr: Port,
+		Addr: configConstants.Port,
 	}
 	log.Fatal(server.ListenAndServe()) // сервер принудительно завершает свою работу
 }
