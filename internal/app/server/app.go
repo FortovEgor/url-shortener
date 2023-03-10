@@ -24,20 +24,13 @@ import (
 чтобы защитить API сервиса от случайных изменений.
 */
 
-// Примечание: при обработке POST запроса просиходит проверка на существование
+// Примечание: при обработке POST запроса НЕ просиходит проверка на существование
 // данного ресурса в БД сайта.
 
 //////////////////////////////////////////////////////////////////////
 
-// PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
-func PerformSeedingOfDB() {
-	storage.UrlDB.AddItem("short_url", "google.com")
-	storage.UrlDB.AddItem("yan", "yandex.ru")
-	storage.UrlDB.AddItem("git", "github.com")
-}
-
 func StartServer() {
-	PerformSeedingOfDB() // сидирование БД
+	storage.PerformSeedingOfDB() // сидирование БД
 
 	http.HandleFunc("/", handlers.MainHandler)
 
