@@ -84,6 +84,7 @@ func TestGetFullURL(t *testing.T) {
 			h := http.HandlerFunc(GetFullURL) // определяем хендлер
 			h.ServeHTTP(w, request)           // запускаем сервер
 			res := w.Result()
+			defer res.Body.Close()
 
 			assert.Equal(t, tt.want.locationHeader, res.Header.Get("Location"), "Unexpected Location header value")
 		})

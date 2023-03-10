@@ -100,6 +100,7 @@ func TestShortenURL(t *testing.T) {
 			h := http.HandlerFunc(ShortenURL) // определяем хендлер
 			h.ServeHTTP(w, request)           // запускаем сервер
 			res := w.Result()
+			defer res.Body.Close()
 
 			assert.Equal(t, tt.want.code, res.Status, "Wrong Status!")
 			assert.Equal(t, tt.want.body, w.Body.String(), "Wrong body!")

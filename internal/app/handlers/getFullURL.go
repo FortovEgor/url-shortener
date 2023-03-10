@@ -17,7 +17,7 @@ func GetFullURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	target, err := storage.UrlDB.GetItem(param)
+	target, err := storage.URLDB.GetItem(param)
 	if err != nil {
 		http.Error(w, "Такого short_url нет в БД!", http.StatusBadRequest)
 		return
