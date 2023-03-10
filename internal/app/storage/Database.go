@@ -15,23 +15,23 @@ type Database struct {
 	URLs map[string]string // словарь типа "short_url:full_url"
 }
 
-// UrlDB - экземпляр нашей БД
-var UrlDB = Database{URLs: map[string]string{}}
+// URLDB - экземпляр нашей БД
+var URLDB = Database{URLs: map[string]string{}}
 
 func GetMD5Hash(text string) string {
 	hash := md5.Sum([]byte(text))
 	return hex.EncodeToString(hash[:])
 }
 
-func MakeShortUrlFromFullUrl(fullUrl string) string {
-	return GetMD5Hash(fullUrl)
+func MakeShortURLFromFullURL(fullURL string) string {
+	return GetMD5Hash(fullURL)
 }
 
 // PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
 func PerformSeedingOfDB() {
 	fullURLs := [3]string{"google.com", "yandex.ru", "github.com"}
 	for _, url := range fullURLs {
-		UrlDB.AddItem(GetMD5Hash(url), url)
+		URLDB.AddItem(GetMD5Hash(url), url)
 	}
 }
 
