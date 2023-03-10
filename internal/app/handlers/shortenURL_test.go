@@ -17,9 +17,8 @@ func TestShortenURL(t *testing.T) {
 	}
 
 	type want struct {
-		code           string
-		locationHeader string
-		body           string
+		code string
+		body string
 	}
 	tests := []struct {
 		name string
@@ -104,10 +103,6 @@ func TestShortenURL(t *testing.T) {
 
 			assert.Equal(t, tt.want.code, res.Status, "Wrong Status!")
 			assert.Equal(t, tt.want.body, w.Body.String(), "Wrong body!")
-
-			if tt.want.locationHeader != "" {
-				assert.Equal(t, tt.want.locationHeader, res.Header.Get("Location"), "Unexpected Location header value")
-			}
 		})
 	}
 }
