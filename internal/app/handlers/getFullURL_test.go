@@ -57,6 +57,7 @@ func TestGetFullURL(t *testing.T) {
 			want: want{
 				code:           "400 Bad Request",
 				locationHeader: "",
+				body:           "Такого short_url нет в БД!",
 			},
 		},
 		{
@@ -68,6 +69,7 @@ func TestGetFullURL(t *testing.T) {
 			want: want{
 				code:           "400 Bad Request",
 				locationHeader: "",
+				body:           "Введите идентификатор URL!",
 			},
 		},
 	}
@@ -86,6 +88,8 @@ func TestGetFullURL(t *testing.T) {
 			res := w.Result()
 			defer res.Body.Close()
 
+			assert.Equal(t, tt.want.code, res.Status, "Wrong Status!")
+			assert.Equal(t, tt.want.body, w.Body.String(), "Wrong body!") // тут ошибка
 			assert.Equal(t, tt.want.locationHeader, res.Header.Get("Location"), "Unexpected Location header value")
 		})
 	}
