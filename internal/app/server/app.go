@@ -5,6 +5,7 @@ import (
 	"github.com/FortovEgor/url-shortener/internal/app/handlers"
 	"github.com/FortovEgor/url-shortener/internal/app/storage"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"net/http"
 )
@@ -48,7 +49,7 @@ func StartServer() {
 	//log.Fatal(server.ListenAndServe()) // сервер принудительно завершает свою работу
 
 	r := chi.NewRouter()
-	//r.Use(middleware.Recoverer)
+	r.Use(middleware.Recoverer)
 
 	r.Route("/", func(r chi.Router) {
 		r.Get("/{shortURL}", handlers.GetFullURL)
