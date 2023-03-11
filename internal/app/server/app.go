@@ -4,6 +4,7 @@ import (
 	"github.com/FortovEgor/url-shortener/internal/app/configs"
 	"github.com/FortovEgor/url-shortener/internal/app/handlers"
 	"github.com/FortovEgor/url-shortener/internal/app/storage"
+	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 )
@@ -24,6 +25,13 @@ import (
 чтобы защитить API сервиса от случайных изменений.
 */
 
+/*
+ИНКРЕМЕНТ 3:
+Используя любой пакет (роутер или фреймворк), совместимый с net/http,
+перепишите ваш код.
+В данном случае используется пакет chi
+*/
+
 // Примечание: при обработке POST запроса НЕ просиходит проверка на существование
 // данного ресурса в БД сайта.
 
@@ -31,11 +39,21 @@ import (
 
 func StartServer() {
 	storage.PerformSeedingOfDB() // сидирование БД
+	//
+	//http.HandleFunc("/", handlers.MainHandler)
+	//
+	//server := &http.Server{
+	//	Addr: configs.Port,
+	//}
+	//log.Fatal(server.ListenAndServe()) // сервер принудительно завершает свою работу
 
-	http.HandleFunc("/", handlers.MainHandler)
+	r := chi.NewRouter()
+	//r.Use(middleware.Recoverer)
 
-	server := &http.Server{
-		Addr: configs.Port,
-	}
-	log.Fatal(server.ListenAndServe()) // сервер принудительно завершает свою работу
+	r.Route("/", func(r chi.Router) {
+		r.Get("/{shortURL}", handlers.GetFullURL)
+		r.Post("/", handlers.ShortenURL)
+	})
+
+	log.Fatal(http.ListenAndServe(configs.Port, r))
 }
