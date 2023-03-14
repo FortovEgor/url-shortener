@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"bytes"
-	"github.com/FortovEgor/url-shortener/internal/app/storage"
+	"github.com/FortovEgor/url-shortener/internal/storage"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -89,16 +89,16 @@ func TestShortenURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			storage.PerformSeedingOfDB() // сидирование БД
+			storage.PerformSeedingOfDB()
 			// отправляем запрос с телом
 
 			body := new(bytes.Buffer)
 			body.WriteString(tt.args.body)
 			request := httptest.NewRequest(tt.args.method, tt.args.URL, body)
 
-			w := httptest.NewRecorder()       // создаём новый Recorder
-			h := http.HandlerFunc(ShortenURL) // определяем хендлер
-			h.ServeHTTP(w, request)           // запускаем сервер
+			w := httptest.NewRecorder()
+			h := http.HandlerFunc(ShortenURL)
+			h.ServeHTTP(w, request)
 			res := w.Result()
 			defer res.Body.Close()
 

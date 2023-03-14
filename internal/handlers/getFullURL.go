@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/FortovEgor/url-shortener/internal/app/storage"
+	"github.com/FortovEgor/url-shortener/internal/storage"
 	"log"
 	"net/http"
 )
@@ -10,20 +10,27 @@ import (
 func GetFullURL(w http.ResponseWriter, r *http.Request) {
 	log.Println("path:", r.URL.Path)
 	param := r.URL.Path[1:]
+	//param := chi.URLParam(r, "id")
 	log.Println("param: ", param)
 
 	if param == "" {
-		//http.Error(w, "Введите идентификатор URL!", http.StatusBadRequest)
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Введите идентификатор URL!"))
+		_, err := w.Write([]byte("Введите идентификатор URL!"))
+		if err != nil {
+			log.Fatal("Ошибка в записи ответа!")
+			return
+		}
 		return
 	}
 
 	target, err := storage.URLDB.GetItem(param)
 	if err != nil {
-		//http.Error(w, "Такого short_url нет в БД!", http.StatusBadRequest)
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Такого short_url нет в БД!"))
+		_, err := w.Write([]byte("Такого short_url нет в БД!"))
+		if err != nil {
+			log.Fatal("Ошибка при записи ответа!")
+			return
+		}
 		return
 	}
 
