@@ -7,6 +7,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func StartServer() {
@@ -18,5 +21,11 @@ func StartServer() {
 		r.Post("/", handlers2.ShortenURL)
 	})
 
-	log.Fatal(http.ListenAndServe(configs.Port, r))
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	if err := http.ListenAndServe(configs.Port, r); err != nil {
+		log.Fatalf("listen: %s\n", err)
+	}
+	<-done
+	log.Print("Server Stopped")
 }
