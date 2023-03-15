@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	handlers2 "github.com/FortovEgor/url-shortener/internal/handlers"
 	"github.com/go-chi/chi/v5"
@@ -9,7 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
+	"time"
 )
 
 func StartServer() {
@@ -21,11 +22,32 @@ func StartServer() {
 		r.Post("/", handlers2.ShortenURL)
 	})
 
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	if err := http.ListenAndServe(configs.Port, r); err != nil {
-		log.Fatalf("listen: %s\n", err)
+	server := &http.Server{
+		Addr:           configs.Port,
+		Handler:        r,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
 	}
-	<-done
-	log.Print("Server Stopped")
+
+	idleConnsClosed := make(chan struct{})
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		// We received an interrupt signal, shut down.
+		if err := server.Shutdown(context.Background()); err != nil {
+			// Error from closing listeners, or context timeout:
+			log.Printf("HTTP server Shutdown: %v", err)
+		}
+		close(idleConnsClosed)
+	}()
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		// Error starting or closing listener:
+		log.Fatalf("HTTP server ListenAndServe: %v", err)
+	}
+
+	<-idleConnsClosed
 }
