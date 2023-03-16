@@ -7,17 +7,18 @@ import (
 	"sync"
 )
 
-type DatabaseInterface interface {
-	GetItem(itemID string) (string, error)
-	AddItem(itemID string, value string)
-}
-
 type Database struct {
 	URLs map[string]string // словарь типа "short_url:full_url"
 }
 
+func NewDatabase() *Database {
+	return &Database{
+		URLs: make(map[string]string),
+	}
+}
+
 // URLDB - экземпляр нашей БД
-var URLDB = Database{URLs: map[string]string{}}
+var URLDB = NewDatabase()
 
 func GetMD5Hash(text string) string {
 	hash := md5.Sum([]byte(text))
