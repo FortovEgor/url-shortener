@@ -5,7 +5,5 @@ import (
 )
 
 func main() {
-	//database := storage.NewDatabase() // вот как это и куда перекинуть??? не понимаю, сидел 2 дня!!!
-
 	server.StartServer()
 }

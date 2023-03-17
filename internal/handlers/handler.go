@@ -12,13 +12,3 @@ func NewHandler(db DatabaseInterface) *Handler {
 type Handler struct {
 	db DatabaseInterface
 }
-
-//func (h * Handler) GetFullURL(w http.ResponseWriter, r *http.Request) {
-//	h.db.GetItem(param)
-//	// ...
-//}
-//
-//func (h * Handler) ShortenURL(w http.ResponseWriter, r *http.Request) {
-//	h.db..AddItem(param)
-//	// ...
-//}
