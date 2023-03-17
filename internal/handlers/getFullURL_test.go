@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bytes"
-	"github.com/FortovEgor/url-shortener/internal/storage"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -76,7 +75,7 @@ func TestGetFullURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			storage.PerformSeedingOfDB()
+			//storage.PerformSeedingOfDB()
 
 			body := new(bytes.Buffer)
 			body.WriteString(tt.args.body)

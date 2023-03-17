@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/FortovEgor/url-shortener/internal/storage"
 	"log"
 	"net/http"
 )
@@ -23,7 +22,8 @@ func (h *Handler) GetFullURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	target, err := storage.URLDB.GetItem(param)
+	target, err := h.db.GetItem(param)
+	//storage.URLDB.GetItem(param)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_, err := w.Write([]byte("Такого short_url нет в БД!"))

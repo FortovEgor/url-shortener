@@ -18,7 +18,7 @@ func NewDatabase() *Database {
 }
 
 // URLDB - экземпляр нашей БД
-var URLDB = NewDatabase()
+//var URLDB = NewDatabase()
 
 func GetMD5Hash(text string) string {
 	hash := md5.Sum([]byte(text))
@@ -30,12 +30,12 @@ func MakeShortURLFromFullURL(fullURL string) string {
 }
 
 // PerformSeedingOfDB - Ф-ия, заполняющая нашу БД произвольными данными ДО запуска роутераы
-func PerformSeedingOfDB() {
-	fullURLs := [3]string{"google.com", "yandex.ru", "github.com"}
-	for _, url := range fullURLs {
-		URLDB.AddItem(url)
-	}
-}
+//func PerformSeedingOfDB() {
+//	fullURLs := [3]string{"google.com", "yandex.ru", "github.com"}
+//	for _, url := range fullURLs {
+//		URLDB.AddItem(url)
+//	}
+//}
 
 // GetItem возвращает full_url по short_url
 func (db *Database) GetItem(shortURL string) (string, error) {

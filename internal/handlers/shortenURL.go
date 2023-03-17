@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/FortovEgor/url-shortener/internal/configs"
-	"github.com/FortovEgor/url-shortener/internal/storage"
 	"io"
 	"log"
 	"net/http"
@@ -25,7 +24,8 @@ func (h *Handler) ShortenURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortURL := storage.URLDB.AddItem(param)
+	shortURL := h.db.AddItem(param)
+	//storage.URLDB.AddItem(param)
 
 	w.WriteHeader(http.StatusCreated)
 	_, err = w.Write([]byte(configs.Host + shortURL))
