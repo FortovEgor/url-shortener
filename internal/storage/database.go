@@ -9,6 +9,7 @@ import (
 
 type Database struct {
 	URLs map[string]string // словарь типа "short_url:full_url"
+	lock sync.RWMutex
 }
 
 func NewDatabase() *Database {
@@ -16,9 +17,6 @@ func NewDatabase() *Database {
 		URLs: make(map[string]string),
 	}
 }
-
-// URLDB - экземпляр нашей БД
-//var URLDB = NewDatabase()
 
 func GetMD5Hash(text string) string {
 	hash := md5.Sum([]byte(text))
@@ -39,22 +37,20 @@ func MakeShortURLFromFullURL(fullURL string) string {
 
 // GetItem возвращает full_url по short_url
 func (db *Database) GetItem(shortURL string) (string, error) {
-	lock := sync.RWMutex{}
-	lock.RLock()
+	db.lock.RLock()
 	item, found := db.URLs[shortURL]
 	if !found {
 		return "", errors.New("такого short url не найдено")
 	}
-	lock.RUnlock()
+	db.lock.RUnlock()
 	return item, nil
 }
 
 // AddItem добавляет пару <shortURL: fullURL> в БД
 func (db *Database) AddItem(fullURL string) (shortURL string) {
-	lock := sync.RWMutex{}
-	lock.Lock()
+	db.lock.Lock()
 	shortURL = MakeShortURLFromFullURL(fullURL)
 	db.URLs[shortURL] = fullURL
-	lock.Unlock()
+	db.lock.Unlock()
 	return
 }
