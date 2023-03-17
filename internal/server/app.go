@@ -3,7 +3,8 @@ package server
 import (
 	"context"
 	"github.com/FortovEgor/url-shortener/internal/configs"
-	handlers2 "github.com/FortovEgor/url-shortener/internal/handlers"
+	"github.com/FortovEgor/url-shortener/internal/handlers"
+	"github.com/FortovEgor/url-shortener/internal/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log"
@@ -17,10 +18,14 @@ func StartServer() {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 
+	//////////////////////////////////////////////////////////////
+	db := storage.NewDatabase()
+	h := handlers.NewHandler(db)
 	r.Route("/", func(r chi.Router) {
-		r.Get("/{shortURL}", handlers2.GetFullURL)
-		r.Post("/", handlers2.ShortenURL)
+		r.Get("/{shortURL}", h.GetFullURL)
+		r.Post("/", h.ShortenURL)
 	})
+	//////////////////////////////////////////////////////////////
 
 	server := &http.Server{
 		Addr:           configs.Port,

@@ -2,14 +2,23 @@ package handlers
 
 type DatabaseInterface interface {
 	GetItem(itemID string) (string, error)
-	AddItem(itemID string, value string)
+	AddItem(fullURL string) string
 }
 
-//
-//func NewHandler(DB DatabaseInterface) *Handler {
-//	return &Handler{s: DB}
+func NewHandler(db DatabaseInterface) *Handler {
+	return &Handler{db: db}
+}
+
+type Handler struct {
+	db DatabaseInterface
+}
+
+//func (h * Handler) GetFullURL(w http.ResponseWriter, r *http.Request) {
+//	h.db.GetItem(param)
+//	// ...
 //}
 //
-//type Handler struct {
-//	s DatabaseInterface
+//func (h * Handler) ShortenURL(w http.ResponseWriter, r *http.Request) {
+//	h.db..AddItem(param)
+//	// ...
 //}
