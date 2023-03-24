@@ -26,6 +26,7 @@ func TestHandler_GetFullURL(t *testing.T) {
 		args args
 		want want
 	}{
+		// для первых двух тестов надо сидирование БД делать!!!!
 		//{
 		//	name: "Status 307 - request for google.com (test #1)",
 		//	args: args{

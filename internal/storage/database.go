@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"log"
 	"sync"
 )
 
@@ -37,20 +38,25 @@ func MakeShortURLFromFullURL(fullURL string) string {
 
 // GetItem возвращает full_url по short_url
 func (db *Database) GetItem(shortURL string) (string, error) {
-	db.lock.RLock()
+	//db.lock.RLock()
 	item, found := db.URLs[shortURL]
 	if !found {
 		return "", errors.New("такого short url не найдено")
 	}
-	db.lock.RUnlock()
+	//db.lock.RUnlock()
 	return item, nil
 }
 
 // AddItem добавляет пару <shortURL: fullURL> в БД
 func (db *Database) AddItem(fullURL string) (shortURL string) {
-	db.lock.Lock()
+	log.Println(1)
+	//db.lock.Lock() // тут проблема
+	log.Println(2)
 	shortURL = MakeShortURLFromFullURL(fullURL)
+	log.Println(3)
 	db.URLs[shortURL] = fullURL
-	db.lock.Unlock()
+	log.Println("shortURL:", shortURL)
+	log.Println(4)
+	//db.lock.Unlock() // -||-
 	return
 }
