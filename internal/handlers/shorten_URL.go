@@ -24,8 +24,10 @@ func (h *Handler) ShortenURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("ADDING ITEM - START") // +
 	shortURL := h.db.AddItem(param)
 	//storage.URLDB.AddItem(param)
+	log.Println("ADDING ITEM - END") // -
 
 	w.WriteHeader(http.StatusCreated)
 	_, err = w.Write([]byte(configs.Host + shortURL))

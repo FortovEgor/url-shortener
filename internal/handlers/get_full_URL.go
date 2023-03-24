@@ -23,6 +23,7 @@ func (h *Handler) GetFullURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	target, err := h.db.GetItem(param)
+	log.Println("target:", target)
 	//storage.URLDB.GetItem(param)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
