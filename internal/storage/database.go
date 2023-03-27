@@ -41,6 +41,7 @@ func (db *Database) GetItem(shortURL string) (string, error) {
 	db.lock.RLock() // ?????????
 	item, found := db.URLs[shortURL]
 	if !found {
+		db.lock.RUnlock() // ????????
 		return "", errors.New("такого short url не найдено")
 	}
 	db.lock.RUnlock() // ????????
@@ -58,5 +59,5 @@ func (db *Database) AddItem(fullURL string) (shortURL string) {
 	log.Println("shortURL:", shortURL)
 	log.Println(4)
 	db.lock.Unlock() // -||-
-	return
+	return shortURL
 }
