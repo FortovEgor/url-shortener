@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/handlers"
 	"github.com/FortovEgor/url-shortener/internal/storage"
@@ -12,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 )
 
@@ -24,7 +26,7 @@ func StartServer() {
 		log.Fatal(err)
 	}
 
-	log.Println("PORT:", cfg.Port, "|", cfg.ServerAddress)
+	//log.Println("PORT:", cfg.Port, "|", cfg.ServerAddress)
 
 	//////////////////////////////////////////////////////////////
 	db := storage.NewDatabase()
@@ -36,8 +38,15 @@ func StartServer() {
 	})
 	//////////////////////////////////////////////////////////////
 
+	//port := cfg.Port
+	adr := fmt.Sprintf("%s", cfg.ServerAddress)
+	parts := strings.Split(adr, ":")[2]
+	//temp := string(parts[len(parts)-1])
+	port := strings.Split(parts, "/")[0]
+	fmt.Println("PORT!!!!:", port)
+
 	server := &http.Server{
-		Addr:           cfg.Port,
+		Addr:           ":" + port, // единственное место в нашем сервере, где используется Порт
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
