@@ -38,7 +38,7 @@ func StartServer() {
 
 	idleConnsClosed := make(chan struct{})
 	go func() {
-		sigint := make(chan os.Signal)
+		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 

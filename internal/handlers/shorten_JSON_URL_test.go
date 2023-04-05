@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"github.com/FortovEgor/url-shortener/internal/storage"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -36,7 +34,7 @@ func TestHandler_ShortenJSONURL(t *testing.T) {
 				body:   `{"url":"<some_url>"}`,
 			},
 			want: want{
-				code: "200 OK",
+				code: "201 Created",
 				body: "{\"result\":\"http://localhost:8080/956f7bcc47c9639a868bedf5be29fd65\"}\n",
 			},
 		},
@@ -48,7 +46,7 @@ func TestHandler_ShortenJSONURL(t *testing.T) {
 				body:   `{"url":"google.com"}`,
 			},
 			want: want{
-				code: "200 OK",
+				code: "201 Created",
 				body: "{\"result\":\"http://localhost:8080/1d5920f4b44b27a802bd77c4f0536f5a\"}\n",
 			},
 		},
@@ -65,12 +63,13 @@ func TestHandler_ShortenJSONURL(t *testing.T) {
 			h := http.HandlerFunc(hNew.ShortenJSONURL)
 			h.ServeHTTP(w, request)
 			res := w.Result()
-			defer func(Body io.ReadCloser) {
-				err := Body.Close()
-				if err != nil {
-					log.Println("Failed to close the body! ERROR: " + err.Error())
-				}
-			}(res.Body)
+			//defer func(Body io.ReadCloser) {
+			//	err := Body.Close()
+			//	if err != nil {
+			//		log.Println("Failed to close the body! ERROR: " + err.Error())
+			//	}
+			//}(res.Body)
+			defer res.Body.Close()
 
 			assert.Equal(t, tt.want.code, res.Status, "Wrong Status!")
 			assert.Equal(t, tt.want.body, w.Body.String(), "Wrong body!")

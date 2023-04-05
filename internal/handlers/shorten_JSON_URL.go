@@ -10,7 +10,7 @@ import (
 )
 
 type JSONRequest struct {
-	Url string `json:"url"`
+	URL string `json:"url"`
 }
 
 type JSONResponse struct {
@@ -29,21 +29,21 @@ func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to unparse incoming JSON; ERROR: "+err.Error(), http.StatusBadRequest)
 	}
 
-	if request.Url == "" {
+	if request.URL == "" {
 		http.Error(w, "URL is empty!", http.StatusBadRequest)
 	}
 
-	url := request.Url // вытягиваем значение url из входящего JSON
+	url := request.URL // вытягиваем значение url из входящего JSON
 	log.Println("URL:", url)
 
-	encodedUrl := storage.MakeShortURLFromFullURL(url)
-	//fmt.Print("encoded URL:", encodedUrl)
+	encodedURL := storage.MakeShortURLFromFullURL(url)
+	//fmt.Print("encoded URL:", encodedURL)
 	//fmt.Print("aaa")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	response := JSONResponse{
-		Result: fmt.Sprintf(configs.Host + encodedUrl),
+		Result: fmt.Sprintf(configs.Host + encodedURL),
 	}
 	err := json.NewEncoder(w).Encode(response)
 
