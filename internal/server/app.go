@@ -23,6 +23,7 @@ func StartServer() {
 	h := handlers.NewHandler(db)
 	r.Route("/", func(r chi.Router) {
 		r.Get("/{shortURL}", h.GetFullURL)
+		r.Post("/api/shorten", h.ShortenJSONURL)
 		r.Post("/", h.ShortenURL)
 	})
 	//////////////////////////////////////////////////////////////
