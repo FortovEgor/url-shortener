@@ -20,6 +20,7 @@ type JSONResponse struct {
 // ShortenJSONURL - обработчик POST запросов, принимающий принимающий
 // в теле запроса JSON-объект {"url":"<some_url>"} и возвращающий в ответ
 // объект {"result":"<shorten_url>"}.
+// ПРИМЕЧАНИЕ: данный метод НЕ использует БД, он просто ВОЗВРАЩАЕТ short_url !
 func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
 	var request JSONRequest
 
@@ -36,12 +37,13 @@ func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
 	log.Println("URL:", url)
 
 	encodedUrl := storage.MakeShortURLFromFullURL(url)
-	log.Println("encoded URL:", encodedUrl)
+	//fmt.Print("encoded URL:", encodedUrl)
+	//fmt.Print("aaa")
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	response := JSONResponse{
-		Result: fmt.Sprintf("http://%s:%d/%s", configs.Host, configs.Port, encodedUrl),
+		Result: fmt.Sprintf(configs.Host + encodedUrl),
 	}
 	err := json.NewEncoder(w).Encode(response)
 
