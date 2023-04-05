@@ -24,6 +24,8 @@ func StartServer() {
 		log.Fatal(err)
 	}
 
+	log.Println("PORT:", cfg.Port, "|", cfg.ServerAddress)
+
 	//////////////////////////////////////////////////////////////
 	db := storage.NewDatabase()
 	h := handlers.NewHandler(db, cfg)
