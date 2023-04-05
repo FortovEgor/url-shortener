@@ -68,7 +68,7 @@ func TestHandler_ShortenJSONURL(t *testing.T) {
 			defer func(Body io.ReadCloser) {
 				err := Body.Close()
 				if err != nil {
-					log.Println("Failed to close the body! ERROR: " + err.Error())
+					log.Println("Failed to close the body! ERROR : " + err.Error())
 				}
 			}(res.Body)
 
