@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FortovEgor/url-shortener/internal/configs"
-	"github.com/FortovEgor/url-shortener/internal/storage"
 	"log"
 	"net/http"
 )
@@ -36,7 +35,7 @@ func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
 	url := request.URL // вытягиваем значение url из входящего JSON
 	log.Println("URL:", url)
 
-	encodedURL := storage.MakeShortURLFromFullURL(url)
+	encodedURL := h.db.AddItem(url)
 	//fmt.Print("encoded URL:", encodedURL)
 	//fmt.Print("aaa")
 
