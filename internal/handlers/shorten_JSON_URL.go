@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/FortovEgor/url-shortener/internal/configs"
 	"log"
 	"net/http"
 )
@@ -42,7 +41,7 @@ func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	response := JSONResponse{
-		Result: fmt.Sprintf(configs.Host + encodedURL),
+		Result: fmt.Sprintf(h.conf.Host + encodedURL),
 	}
 	err := json.NewEncoder(w).Encode(response)
 
