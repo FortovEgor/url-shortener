@@ -39,7 +39,7 @@ func StartServer() {
 	//////////////////////////////////////////////////////////////
 
 	//port := cfg.Port
-	adr := fmt.Sprintf("%s", cfg.ServerAddress)
+	adr := cfg.ServerAddress
 	parts := strings.Split(adr, ":")[2]
 	//temp := string(parts[len(parts)-1])
 	port := strings.Split(parts, "/")[0]
