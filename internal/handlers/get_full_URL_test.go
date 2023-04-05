@@ -2,8 +2,11 @@ package handlers
 
 import (
 	"bytes"
+	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/storage"
+	"github.com/caarlos0/env/v6"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -79,6 +82,11 @@ func TestHandler_GetFullURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			//storage.PerformSeedingOfDB()
 
+			var cfg configs.Config
+			if err := env.Parse(&cfg); err != nil {
+				log.Fatal(err)
+			}
+
 			body := new(bytes.Buffer)
 			body.WriteString(tt.args.body)
 			request := httptest.NewRequest(tt.args.method, tt.args.URL, body)
@@ -86,7 +94,7 @@ func TestHandler_GetFullURL(t *testing.T) {
 			w := httptest.NewRecorder()
 			//h := http.HandlerFunc(GetFullURL)
 			db := storage.NewDatabase()
-			hNew := NewHandler(db)
+			hNew := NewHandler(db, cfg)
 			h := http.HandlerFunc(hNew.GetFullURL)
 			h.ServeHTTP(w, request)
 			res := w.Result()

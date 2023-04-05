@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/FortovEgor/url-shortener/internal/configs"
 	"io"
 	"log"
 	"net/http"
@@ -30,7 +29,7 @@ func (h *Handler) ShortenURL(w http.ResponseWriter, r *http.Request) {
 	log.Println("ADDING ITEM - END") // -
 
 	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write([]byte(configs.Host + shortURL))
+	_, err = w.Write([]byte(h.conf.Host + shortURL))
 	if err != nil {
 		log.Fatal("Ошибка при записе ответа!")
 	}

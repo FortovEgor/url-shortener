@@ -5,6 +5,7 @@ import (
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/handlers"
 	"github.com/FortovEgor/url-shortener/internal/storage"
+	"github.com/caarlos0/env/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log"
@@ -18,9 +19,14 @@ func StartServer() {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 
+	var cfg configs.Config
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatal(err)
+	}
+
 	//////////////////////////////////////////////////////////////
 	db := storage.NewDatabase()
-	h := handlers.NewHandler(db)
+	h := handlers.NewHandler(db, cfg)
 	r.Route("/", func(r chi.Router) {
 		r.Get("/{shortURL}", h.GetFullURL)
 		r.Post("/api/shorten", h.ShortenJSONURL)
@@ -29,7 +35,7 @@ func StartServer() {
 	//////////////////////////////////////////////////////////////
 
 	server := &http.Server{
-		Addr:           configs.Port,
+		Addr:           cfg.Port,
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
