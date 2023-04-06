@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/handlers"
 	"github.com/FortovEgor/url-shortener/internal/storage/persistent"
@@ -39,6 +40,8 @@ func StartServer() {
 		r.Post("/api/shorten", h.ShortenJSONURL)
 		r.Post("/", h.ShortenURL)
 	})
+	//////////////////////////////////////////////////////////////
+	fmt.Println("STORAGE PATH:", cfg.FileStoragePath)
 	//////////////////////////////////////////////////////////////
 
 	server := &http.Server{
