@@ -30,9 +30,12 @@ func StartServer() {
 	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "Save all shortened URLs to the disk")
 	flag.Parse()
 
+	fmt.Println("File for DB:", cfg.FileStoragePath)
+
 	//////////////////////////////////////////////////////////////
 	db := storage.NewDatabase()
 	//db := persistent.NewStorage(cfg.FileStoragePath)
+	//file_DB := persistent.NewStorage(cfg.FileStoragePath)
 
 	h := handlers.NewHandler(db, cfg)
 	r.Route("/", func(r chi.Router) {

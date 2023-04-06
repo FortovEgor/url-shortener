@@ -62,8 +62,8 @@ func loadURLsFromFile(database *storage.Database, storagePath string) (err error
 	return
 }
 
-func (s *Persistent) GetItem(key string) (string, error) {
-	value, err := s.VirtualDatabase.GetItem(key)
+func (s *Persistent) GetItem(fullURL string) (string, error) {
+	value, err := s.VirtualDatabase.GetItem(fullURL)
 
 	if err != nil {
 		return "", err

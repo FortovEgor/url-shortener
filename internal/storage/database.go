@@ -49,27 +49,19 @@ func (db *Database) GetItem(shortURL string) (string, error) {
 }
 
 // AddItem добавляет пару <shortURL: fullURL> в БД
-func (db *Database) AddItem(fullURL string) (shortURL string) {
-	log.Println(1)
+func (db *Database) AddItem(fullURL string) (shortURL string, err error) {
 	db.lock.Lock()
-	log.Println(2)
 	shortURL = MakeShortURLFromFullURL(fullURL)
-	log.Println(3)
 	db.URLs[shortURL] = fullURL
 	log.Println("shortURL:", shortURL)
-	log.Println(4)
 	db.lock.Unlock()
-	return shortURL
+	return shortURL, nil
 }
 
 // AddItem добавляет пару <shortURL: fullURL> в БД, имея ОБА ЗНАЧЕНИЯ
 func (db *Database) AddItemBothValuesKnown(fullURL, shortURL string) {
-	log.Println(1)
 	db.lock.Lock()
-	log.Println(2)
-	log.Println(3)
 	db.URLs[shortURL] = fullURL
 	log.Println("shortURL:", shortURL)
-	log.Println(4)
 	db.lock.Unlock()
 }

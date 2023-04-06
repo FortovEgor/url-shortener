@@ -34,7 +34,7 @@ func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
 	url := request.URL // вытягиваем значение url из входящего JSON
 	log.Println("URL:", url)
 
-	encodedURL := h.db.AddItem(url)
+	encodedURL, _ := h.db.AddItem(url)
 	//fmt.Print("encoded URL:", encodedURL)
 	//fmt.Print("aaa")
 
