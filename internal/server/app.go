@@ -5,7 +5,7 @@ import (
 	"flag"
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/handlers"
-	"github.com/FortovEgor/url-shortener/internal/storage"
+	"github.com/FortovEgor/url-shortener/internal/storage/persistent"
 	"github.com/caarlos0/env/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -30,7 +30,9 @@ func StartServer() {
 	flag.Parse()
 
 	//////////////////////////////////////////////////////////////
-	db := storage.NewDatabase()
+	//db := storage.NewDatabase()
+	db := persistent.NewStorage(cfg.FileStoragePath)
+
 	h := handlers.NewHandler(db, cfg)
 	r.Route("/", func(r chi.Router) {
 		r.Get("/{shortURL}", h.GetFullURL)
