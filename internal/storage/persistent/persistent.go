@@ -62,8 +62,8 @@ func loadURLsFromFile(database *storage.Database, storagePath string) (err error
 	return
 }
 
-func (s *Persistent) GetItem(fullURL string) (string, error) {
-	value, err := s.VirtualDatabase.GetItem(fullURL)
+func (s *Persistent) GetItem(shortURL string) (string, error) {
+	value, err := s.VirtualDatabase.GetItem(shortURL)
 
 	if err != nil {
 		return "", err
@@ -72,14 +72,14 @@ func (s *Persistent) GetItem(fullURL string) (string, error) {
 	return value, nil
 }
 
-func (s *Persistent) AddItem(key string) error {
-	s.VirtualDatabase.AddItem(key)
-	value := storage.MakeShortURLFromFullURL(key)
+func (s *Persistent) AddItem(fullURL string) (string, error) {
+	s.VirtualDatabase.AddItem(fullURL)
+	shortURL := storage.MakeShortURLFromFullURL(fullURL)
 
 	if s.PathToFileStorage != "" {
 		file, err := os.OpenFile(s.PathToFileStorage, os.O_WRONLY|os.O_APPEND, 0777)
 		if err != nil {
-			return err
+			return shortURL, err
 		}
 
 		defer func() {
@@ -92,9 +92,9 @@ func (s *Persistent) AddItem(key string) error {
 		}()
 
 		// записываем очередную запись в файл
-		if _, err = writer.WriteString(key + " " + value + "\n"); err != nil {
-			return err
+		if _, err = writer.WriteString(fullURL + " " + shortURL + "\n"); err != nil {
+			return shortURL, err
 		}
 	}
-	return nil
+	return shortURL, nil
 }
