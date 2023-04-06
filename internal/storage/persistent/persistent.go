@@ -54,8 +54,7 @@ func loadURLsFromFile(database *storage.Database, storagePath string) (err error
 			return
 		}
 		line := scanner.Text()
-		var data []string
-		data = strings.Split(line, " ")
+		data := strings.Split(line, " ")
 
 		database.AddItemBothValuesKnown(data[0], data[1])
 	}

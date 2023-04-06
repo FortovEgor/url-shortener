@@ -35,9 +35,9 @@ func StartServer() {
 	//////////////////////////////////////////////////////////////
 	//db := storage.NewDatabase()
 	//db := persistent.NewStorage(cfg.FileStoragePath)
-	fileDb := persistent.NewStorage(cfg.FileStoragePath)
+	fileDB := persistent.NewStorage(cfg.FileStoragePath)
 
-	h := handlers.NewHandler(fileDb, cfg)
+	h := handlers.NewHandler(fileDB, cfg)
 	r.Route("/", func(r chi.Router) {
 		r.Get("/{shortURL}", h.GetFullURL)
 		r.Post("/api/shorten", h.ShortenJSONURL)
