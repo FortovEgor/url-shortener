@@ -46,7 +46,7 @@ func StartServer() {
 	fmt.Println("PORT!!!!:", port)
 
 	server := &http.Server{
-		Addr:           ":" + port, // единственное место в нашем сервере, где используется Порт
+		Addr:           "localhost:8080", // единственное место в нашем сервере, где используется Порт
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
