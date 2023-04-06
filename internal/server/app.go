@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"flag"
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/handlers"
 	"github.com/FortovEgor/url-shortener/internal/storage"
@@ -23,8 +24,10 @@ func StartServer() {
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatal(err)
 	}
-
-	//log.Println("PORT:", cfg.Port, "|", cfg.ServerAddress)
+	flag.StringVar(&cfg.ServerAddress, "a", cfg.ServerAddress, "The address where server is deployed")
+	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Use ths url as prefix to shortened value")
+	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "Save all shortened URLs to the disk")
+	flag.Parse()
 
 	//////////////////////////////////////////////////////////////
 	db := storage.NewDatabase()
@@ -35,13 +38,6 @@ func StartServer() {
 		r.Post("/", h.ShortenURL)
 	})
 	//////////////////////////////////////////////////////////////
-
-	//port := cfg.Port
-	//adr := cfg.ServerAddress
-	//parts := strings.Split(adr, ":")[2]
-	////temp := string(parts[len(parts)-1])
-	//port := strings.Split(parts, "/")[0]
-	//fmt.Println("PORT!!!!:", port)
 
 	server := &http.Server{
 		Addr:           cfg.ServerAddress, // единственное место в нашем сервере, где используется Порт
