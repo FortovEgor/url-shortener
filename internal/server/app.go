@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/handlers"
 	"github.com/FortovEgor/url-shortener/internal/storage"
@@ -13,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"time"
 )
 
@@ -39,14 +37,14 @@ func StartServer() {
 	//////////////////////////////////////////////////////////////
 
 	//port := cfg.Port
-	adr := cfg.ServerAddress
-	parts := strings.Split(adr, ":")[2]
-	//temp := string(parts[len(parts)-1])
-	port := strings.Split(parts, "/")[0]
-	fmt.Println("PORT!!!!:", port)
+	//adr := cfg.ServerAddress
+	//parts := strings.Split(adr, ":")[2]
+	////temp := string(parts[len(parts)-1])
+	//port := strings.Split(parts, "/")[0]
+	//fmt.Println("PORT!!!!:", port)
 
 	server := &http.Server{
-		Addr:           "localhost:8080", // единственное место в нашем сервере, где используется Порт
+		Addr:           cfg.ServerAddress, // единственное место в нашем сервере, где используется Порт
 		Handler:        r,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,

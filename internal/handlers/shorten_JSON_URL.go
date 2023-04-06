@@ -41,7 +41,7 @@ func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	response := JSONResponse{
-		Result: fmt.Sprintf(h.conf.ServerAddress + encodedURL),
+		Result: fmt.Sprintf("%s/%s", h.conf.BaseURL, encodedURL),
 	}
 	err := json.NewEncoder(w).Encode(response)
 
