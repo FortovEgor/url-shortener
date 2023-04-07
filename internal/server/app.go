@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/FortovEgor/url-shortener/internal/configs"
 	"github.com/FortovEgor/url-shortener/internal/handlers"
+	gzip "github.com/FortovEgor/url-shortener/internal/server/middleware"
 	"github.com/FortovEgor/url-shortener/internal/storage/persistent"
 	"github.com/caarlos0/env/v6"
 	"github.com/go-chi/chi/v5"
@@ -20,11 +21,13 @@ import (
 func StartServer() {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
+	r.Use(gzip.GZIPHandler) // ДОБАВИЛИ сжатие трафика
 
 	var cfg configs.Config
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(cfg)
 	flag.StringVar(&cfg.ServerAddress, "a", cfg.ServerAddress, "The address where server is deployed")
 	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Use ths url as prefix to shortened value")
 	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "Save all shortened URLs to the disk")
@@ -35,7 +38,7 @@ func StartServer() {
 	//////////////////////////////////////////////////////////////
 	//db := storage.NewDatabase()
 	//db := persistent.NewStorage(cfg.FileStoragePath)
-	fileDB := persistent.NewStorage(cfg.FileStoragePath)
+	fileDB, _ := persistent.NewStorage(cfg.FileStoragePath)
 
 	h := handlers.NewHandler(fileDB, cfg)
 	r.Route("/", func(r chi.Router) {

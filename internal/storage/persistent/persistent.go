@@ -2,6 +2,7 @@ package persistent
 
 import (
 	"bufio"
+	"errors"
 	"github.com/FortovEgor/url-shortener/internal/storage"
 	"log"
 	"os"
@@ -21,7 +22,11 @@ type Persistent struct {
 	VirtualDatabase   *storage.Database
 }
 
-func NewStorage(storagePath string) *Persistent {
+func NewStorage(storagePath string) (*Persistent, error) {
+	if storagePath == "" {
+		return nil, errors.New("Не указан путь к БД!")
+	}
+
 	database := storage.NewDatabase() // для VirtualDatabase
 
 	if err := loadURLsFromFile(database, storagePath); err != nil {
@@ -31,7 +36,7 @@ func NewStorage(storagePath string) *Persistent {
 	return &Persistent{
 		PathToFileStorage: storagePath,
 		VirtualDatabase:   database,
-	}
+	}, nil
 }
 
 // loadURLsFromFile - ф-ия загружает данные из Локальной БД (т.е. файла) в runtime БД (ОЗУ)
