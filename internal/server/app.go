@@ -21,7 +21,7 @@ import (
 func StartServer() {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
-	r.Use(gzip.CheatedHandler) // ДОБАВИЛИ сжатие трафика
+	r.Use(gzip.GZIPHandler) // ДОБАВИЛИ сжатие трафика
 
 	var cfg configs.Config
 	if err := env.Parse(&cfg); err != nil {
