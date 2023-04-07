@@ -10,7 +10,6 @@ import (
 	"github.com/FortovEgor/url-shortener/internal/storage/persistent"
 	"github.com/caarlos0/env/v6"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -20,7 +19,7 @@ import (
 
 func StartServer() {
 	r := chi.NewRouter()
-	r.Use(middleware.Recoverer)
+	//r.Use(middleware.Recoverer)
 	r.Use(gzip.GZIPHandler) // ДОБАВИЛИ сжатие трафика
 
 	var cfg configs.Config
