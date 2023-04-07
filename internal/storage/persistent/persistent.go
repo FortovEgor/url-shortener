@@ -24,7 +24,7 @@ type Persistent struct {
 
 func NewStorage(storagePath string) (*Persistent, error) {
 	if storagePath == "" {
-		return nil, errors.New("Не указан путь к БД!")
+		return nil, errors.New("не указан путь к БД")
 	}
 
 	database := storage.NewDatabase() // для VirtualDatabase
