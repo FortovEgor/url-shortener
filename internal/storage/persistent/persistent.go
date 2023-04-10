@@ -2,7 +2,6 @@ package persistent
 
 import (
 	"bufio"
-	"errors"
 	"github.com/FortovEgor/url-shortener/internal/storage"
 	"log"
 	"os"
@@ -23,14 +22,17 @@ type Persistent struct {
 }
 
 func NewStorage(storagePath string) (*Persistent, error) {
-	if storagePath == "" {
-		return nil, errors.New("не указан путь к БД")
-	}
+	//if storagePath == "" {
+	//	return nil, errors.New("не указан путь к БД")
+	//}
 
 	database := storage.NewDatabase() // для VirtualDatabase
 
-	if err := loadURLsFromFile(database, storagePath); err != nil {
-		log.Fatal(err)
+	// загружаем данные из файла ТОЛЬКО если этот файл существует!
+	if storagePath != "" {
+		if err := loadURLsFromFile(database, storagePath); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	return &Persistent{
