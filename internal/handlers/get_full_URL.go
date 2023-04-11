@@ -7,6 +7,8 @@ import (
 
 // GetFullURL - Обработчик GET запросов - запросов на получение full_URL из short_URL
 func (h *Handler) GetFullURL(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("Accept-Encoding", "gzip")
+	r.Header.Set("Content-Encoding", "gzip")
 	log.Println("path:", r.URL.Path)
 	param := r.URL.Path[1:]
 	//param := chi.URLParam(r, "id")
