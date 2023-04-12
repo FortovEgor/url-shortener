@@ -111,25 +111,5 @@ func (s *Persistent) AddItem(fullURL string) (string, error) {
 	s.VirtualDatabase.AddItem(fullURL)
 	shortURL := storage.MakeShortURLFromFullURL(fullURL)
 
-	//if s.PathToFileStorage != "" {
-	//	file, err := os.OpenFile(s.PathToFileStorage, os.O_WRONLY|os.O_APPEND, 0777)
-	//	if err != nil {
-	//		return shortURL, err
-	//	}
-	//
-	//	defer func() {
-	//		_ = file.Close()
-	//	}()
-	//
-	//	writer := bufio.NewWriter(file)
-	//	defer func() {
-	//		_ = writer.Flush()
-	//	}()
-	//
-	//	// записываем очередную запись в файл
-	//	if _, err = writer.WriteString(fullURL + " " + shortURL + "\n"); err != nil {
-	//		return shortURL, err
-	//	}
-	//}
 	return shortURL, nil
 }
