@@ -65,7 +65,7 @@ func StartServer() {
 		<-sigint
 
 		// сохраняем данные в файл перед тем, как завершить работу сервиса
-
+		persistent.LoadURLsToStorage(fileDB, cfg.FileStoragePath)
 		// We received an interrupt signal, shut down.
 		if err := server.Shutdown(context.Background()); err != nil {
 			// Error from closing listeners, or context timeout:
