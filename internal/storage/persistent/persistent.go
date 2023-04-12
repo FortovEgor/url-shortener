@@ -69,7 +69,7 @@ func loadURLsFromFile(database *storage.Database, storagePath string) (err error
 }
 
 func (s *Persistent) GetItem(shortURL string) (string, error) {
-	value, err := s.VirtualDatabase.GetItem(shortURL)
+	value, err := s.VirtualDatabase.GetItem(shortURL) // достаем зн-ие из БД в ОЗУ
 
 	if err != nil {
 		return "", err
@@ -78,14 +78,13 @@ func (s *Persistent) GetItem(shortURL string) (string, error) {
 	return value, nil
 }
 
-func (s *Persistent) AddItem(fullURL string) (string, error) {
-	s.VirtualDatabase.AddItem(fullURL)
-	shortURL := storage.MakeShortURLFromFullURL(fullURL)
-
+// LoadURLsToStorage - ф-ия, кот-ая загружает все записи из БД в файл
+func LoadURLsToStorage(s *Persistent, storagePath string) (err error) {
 	if s.PathToFileStorage != "" {
-		file, err := os.OpenFile(s.PathToFileStorage, os.O_WRONLY|os.O_APPEND, 0777)
+		//file, err := os.OpenFile(s.PathToFileStorage, os.O_WRONLY|os.O_APPEND, 0777)
+		file, err := os.OpenFile(s.PathToFileStorage, os.O_WRONLY, 0777)
 		if err != nil {
-			return shortURL, err
+			return err
 		}
 
 		defer func() {
@@ -97,10 +96,40 @@ func (s *Persistent) AddItem(fullURL string) (string, error) {
 			_ = writer.Flush()
 		}()
 
-		// записываем очередную запись в файл
-		if _, err = writer.WriteString(fullURL + " " + shortURL + "\n"); err != nil {
-			return shortURL, err
+		for shortURL, fullURL := range s.VirtualDatabase.URLs {
+			// записываем очередную запись в файл
+			if _, err = writer.WriteString(fullURL + " " + shortURL + "\n"); err != nil {
+				return err
+			}
 		}
+
 	}
+	return
+}
+
+func (s *Persistent) AddItem(fullURL string) (string, error) {
+	s.VirtualDatabase.AddItem(fullURL)
+	shortURL := storage.MakeShortURLFromFullURL(fullURL)
+
+	//if s.PathToFileStorage != "" {
+	//	file, err := os.OpenFile(s.PathToFileStorage, os.O_WRONLY|os.O_APPEND, 0777)
+	//	if err != nil {
+	//		return shortURL, err
+	//	}
+	//
+	//	defer func() {
+	//		_ = file.Close()
+	//	}()
+	//
+	//	writer := bufio.NewWriter(file)
+	//	defer func() {
+	//		_ = writer.Flush()
+	//	}()
+	//
+	//	// записываем очередную запись в файл
+	//	if _, err = writer.WriteString(fullURL + " " + shortURL + "\n"); err != nil {
+	//		return shortURL, err
+	//	}
+	//}
 	return shortURL, nil
 }
