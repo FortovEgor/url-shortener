@@ -1,7 +1,6 @@
 package gzip
 
 import (
-	"bytes"
 	"compress/gzip"
 	"io"
 	"net/http"
@@ -50,19 +49,8 @@ func GZIPHandler(next http.Handler) http.Handler {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			defer func() {
-				_ = gz.Close()
-			}()
-
-			body, err := io.ReadAll(gz)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			r.Body = io.NopCloser(bytes.NewReader(body))
-			//r.ContentLength = int64(len(body))
-
+			defer gz.Close()
+			r.Body = gz
 			next.ServeHTTP(w, r)
 			return
 		}

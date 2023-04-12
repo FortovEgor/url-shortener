@@ -20,8 +20,6 @@ type JSONResponse struct {
 // объект {"result":"<shorten_url>"}.
 // ПРИМЕЧАНИЕ: данный метод НЕ использует БД, он просто ВОЗВРАЩАЕТ short_url !
 func (h *Handler) ShortenJSONURL(w http.ResponseWriter, r *http.Request) {
-	r.Header.Set("Accept-Encoding", "gzip")
-	r.Header.Set("Content-Encoding", "gzip")
 	var request JSONRequest
 
 	// не получилось распарсить входящий JSON

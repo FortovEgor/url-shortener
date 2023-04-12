@@ -7,8 +7,6 @@ import (
 
 // GetFullURL - Обработчик GET запросов - запросов на получение full_URL из short_URL
 func (h *Handler) GetFullURL(w http.ResponseWriter, r *http.Request) {
-	r.Header.Set("Accept-Encoding", "gzip")
-	r.Header.Set("Content-Encoding", "gzip")
 	log.Println("path:", r.URL.Path)
 	param := r.URL.Path[1:]
 	//param := chi.URLParam(r, "id")
@@ -37,7 +35,7 @@ func (h *Handler) GetFullURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", target)
+	w.Header().Set("Location", target) // здесь делается повторный запрос вида /{target}  (который ВСЕГДА возвращет Not Found)
 	log.Println(target)
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
